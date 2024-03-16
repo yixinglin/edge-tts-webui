@@ -2,6 +2,7 @@ import gradio as gr
 import edge_tts
 import asyncio
 import os
+
 # https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/voices/list?trustedclienttoken=6A5AA1D4EAFF4E9FB37E23D68491D6F4
 SUPPORTED_VOICES = {
     'Xiaoxiao-晓晓': 'zh-CN-XiaoxiaoNeural',
@@ -11,14 +12,18 @@ SUPPORTED_VOICES = {
     'Yunxia-云夏': 'zh-CN-YunxiaNeural',
     'Yunyang-云扬': 'zh-CN-YunyangNeural',
     'liaoning-Xiaobei-晓北辽宁': 'zh-CN-liaoning-XiaobeiNeural',
-    'shaanxi-Xiaoni-陕西晓妮': 'zh-CN-shaanxi-XiaoniNeural'
+    'shaanxi-Xiaoni-陕西晓妮': 'zh-CN-shaanxi-XiaoniNeural',
+    'de-AT-IngridNeural': 'de-AT-IngridNeural',
+    'en-US-AvaNeural': 'en-US-AvaNeural'
 }
+
 
 # 发音切换
 def changeVoice(voices):
     example = SUPPORTED_VOICES[voices]
-    example_file = os.path.join(os.path.dirname(__file__), "example/"+example+".wav")
+    example_file = os.path.join(os.path.dirname(__file__), "example/" + example + ".wav")
     return example_file
+
 
 # 文本转语音
 async def textToSpeech(text, voices, rate, volume):
@@ -67,19 +72,19 @@ with gr.Blocks(css="style.css", title="文本转语音") as demo:
             voices = gr.Dropdown(choices=[
                 "Xiaoxiao-晓晓", "Xiaoyi-晓伊", "Yunjian-云健", "Yunxi-云希",
                 "Yunxia-云夏", "Yunyang-云扬", "liaoning-Xiaobei-晓北辽宁",
-                "shaanxi-Xiaoni-陕西晓妮"
+                "shaanxi-Xiaoni-陕西晓妮", "de-AT-IngridNeural", "en-US-AvaNeural"
             ],
-                                 value="Xiaoxiao-晓晓",
-                                 label="发音",
-                                 info="请选择发音人",
-                                 interactive=True)
-            
-            example = gr.Audio(label="试听",
-                              value="example/zh-CN-XiaoxiaoNeural.wav",
-                              interactive=False,
-                              elem_classes="example")
+                value="de-AT-IngridNeural",
+                label="发音",
+                info="请选择发音人",
+                interactive=True)
 
-            voices.change(fn=changeVoice,inputs=voices,outputs=example)
+            example = gr.Audio(label="试听",
+                               value="example/de-AT-IngridNeural.mp3",
+                               interactive=False,
+                               elem_classes="example")
+
+            voices.change(fn=changeVoice, inputs=voices, outputs=example)
             rate = gr.Slider(-100,
                              100,
                              step=1,
@@ -87,7 +92,7 @@ with gr.Blocks(css="style.css", title="文本转语音") as demo:
                              label="语速增减",
                              info="加快或减慢语速",
                              interactive=True)
-            
+
             volume = gr.Slider(-100,
                                100,
                                step=1,
@@ -105,4 +110,4 @@ with gr.Blocks(css="style.css", title="文本转语音") as demo:
             clear.click(fn=clearSpeech, outputs=[text, audio])
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(server_name="0.0.0.0")
